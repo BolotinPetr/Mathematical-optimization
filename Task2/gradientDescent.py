@@ -20,13 +20,13 @@ def gradient_descent(function, initial, stop_criterion):
                 step1 *= delta
             else:
                 status2 = 0
-            if step1 < 0.000001:
+            if step1 < 0.0001:
                 status2 = 0
         return step1
     eps = 0.1
     delta = 0.1
     h = 0.000000001
-    step = 0.01
+    step = 1
     number = initial.shape[0]
     grad = np.zeros(number)
     status = 1
@@ -36,7 +36,7 @@ def gradient_descent(function, initial, stop_criterion):
         find_grad()
         step = choose_step(step)
         initial = initial - grad * step
-        print initial
-        if np.all(grad*step <= stop_criterion) and np.all(grad*step >= -stop_criterion):
+        #print grad
+        if np.all(grad * step <= stop_criterion) and np.all(grad * step >= -stop_criterion):
             status = 0
     return initial, counter
