@@ -16,23 +16,20 @@ class CentralPathMethod:
         self.m = self.b.shape[0]
 
     def F(self, x, x_s, y, y_s):
-        result = [
-            np.array(np.dot(self.A, x) + x_s - self.b),
-            np.array(np.dot(self.A.T, y) - y_s - self.c),
-            np.dot(np.dot(np.diag(x), np.diag(y_s)), np.ones([self.c.size])) - self.u*np.ones(self.c.size),
-            np.dot(np.dot(np.diag(y), np.diag(x_s)), np.ones([self.b.size])) - self.u*np.ones(self.b.size)
-            ]
-        #print np.concatenate(result)
-        return np.concatenate(result)
+        F_1 = np.dot(self.A, x) + x_s - self.b
+        F_2 = np.dot(self.A.T, y) - y_s - self.c
+        F_3 = np.dot(np.dot(np.diag(x), np.diag(y_s)), np.ones([self.c.size])) - self.u*np.ones(self.c.size)
+        F_4 = np.dot(np.dot(np.diag(y), np.diag(x_s)), np.ones([self.b.size])) - self.u*np.ones(self.b.size)
+        return np.concatenate((F_1, F_2, F_3, F_4))
 
-    def J(self, x, xs, y, ys):
+    def J(self, x, x_s, y, y_s):
         n = x.size
-        m = xs.size
+        m = x_s.size
         result = [
                 np.array(np.concatenate((self.A, np.eye(m), np.zeros([m, m]), np.zeros([m, n])), axis = 1)),
                 np.array(np.concatenate((np.zeros([n, n]), np.zeros([n, m]), self.A.T, -np.eye(n)), axis = 1)),
-                np.concatenate((np.diag(ys), np.zeros([n, m]), np.zeros([n, m]), np.diag(x)), axis = 1),
-                np.concatenate((np.zeros([m, n]), np.diag(y), np.diag(xs), np.zeros([m, n])), axis = 1)
+                np.concatenate((np.diag(y_s), np.zeros([n, m]), np.zeros([n, m]), np.diag(x)), axis = 1),
+                np.concatenate((np.zeros([m, n]), np.diag(y), np.diag(x_s), np.zeros([m, n])), axis = 1)
             ]
         return np.concatenate((result), axis = 0)
 
