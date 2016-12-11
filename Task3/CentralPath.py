@@ -36,27 +36,27 @@ class CentralPathMethod:
 
     def solve_F(self):
         A, b, c = self.A, self.b, self.c
-        epsilon = 10**(-2)
-        n = c.size
-        m = b.size
+        epsilon = 0.01
+        n = self.n
+        m = self.m
 
         x_k = np.ones(2*(n+m))
         k = 0
-        while (1):
+        while 1:
             k += 1
             tau = 1.
             x = x_k[0:n]
-            xs = x_k[n:n+m]
+            x_s = x_k[n:n+m]
             y = x_k[n+m:n+m+m]
-            ys = x_k[n+m+m:n+n+m+m]
+            y_s = x_k[n+m+m:n+n+m+m]
 
-            fxk = self.F(x, xs, y, ys)
+            F = self.F(x, x_s, y, y_s)
 
-            if (lin.norm(fxk) < epsilon) or k > 100:
+            if (lin.norm(F) < epsilon) or k > 100:
                 return x_k
 
-            jacob_fxk = lin.inv(self.J(x, xs, y, ys))
-            koef = np.dot(fxk, jacob_fxk.T)
+            J_F_inv = lin.inv(self.J(x, x_s, y, y_s))
+            koef = np.dot(F, J_F_inv.T)
 
             x_k1 = x_k - koef*tau
 
@@ -67,18 +67,18 @@ class CentralPathMethod:
             tmp = np.copy(x_k1)
             x_k = np.copy(tmp)
 
-    def method(self, initial):
+    def method(self):
         x = self.solve_F()
         k = 0
         k_max = 10000
-        result = []
+        path = []
         n, m = self.n, self.m
         while 1:
             k += 1
             x_prev = np.copy(x)
             self.u /= 10.
             x = self.solve_F()
-            #result.append(x)
+            #path.append(x)
             if ((lin.norm(x_prev[0:n] - x[0:n]) < self.e1 and lin.norm(x_prev[n:n+m] - x[n:n+m]) < self.e2
                 and lin.norm(x_prev[n+m:n+m+m] - x[n+m:n+m+m]) < self.e3
                 and lin.norm(x_prev[n+m+m:n+n+m+m] - x[n+m+m:n+n+m+m]) < self.e4)
