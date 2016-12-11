@@ -3,6 +3,7 @@ import numpy as np
 from scipy.optimize import newton_krylov, anderson, root, fsolve
 from numpy import linalg as lin
 
+
 class CentralPathMethod:
     def __init__(self, param):
         self.u, self.e1, self.e2, self.e3, self.e4 = param[0], param[1], param[2], param[3], param[4]
@@ -38,16 +39,11 @@ class CentralPathMethod:
         epsilon = 10**(-2)
         n = c.size
         m = b.size
-        x = np.ones(n)
-        y = np.ones(m)
-        xs = np.ones(m)
-        ys = np.ones(n)
 
-        x_k1 = np.ones(2*(n+m))
         x_k = np.ones(2*(n+m))
         k = 0
         while (1):
-            k +=1
+            k += 1
             tau = 1.
             x = x_k[0:n]
             xs = x_k[n:n+m]
@@ -64,27 +60,15 @@ class CentralPathMethod:
 
             x_k1 = x_k - koef*tau
 
-            while((x_k1<0).any()):
+            while (x_k1 < 0).any():
                 x_k1 = x_k - koef*tau
-                tau = tau / 2.
+                tau /= 2.
 
             tmp = np.copy(x_k1)
-            x_k1 = np.copy(x_k)
             x_k = np.copy(tmp)
 
     def method(self, initial):
-        x = np.zeros(self.n)
-        x_s = np.zeros(self.m)
-        y = np.zeros(self.m)
-        y_s = np.zeros(self.n)
-        status = 0
-        epsilon1 = 10**(-2)
-        epsilon2 = 10**(-2)
-        epsilon3 = 10**(-2)
-        epsilon4 = 10**(-2)
-        self.u = 100.
         x = self.solve_F()
-        x_prev = np.array(x.size)
         k = 0
         k_max = 10000
         result = []
@@ -94,9 +78,9 @@ class CentralPathMethod:
             x_prev = np.copy(x)
             self.u /= 10.
             x = self.solve_F()
-            result.append(x)
-            if ((lin.norm(x_prev[0:n] - x[0:n]) < epsilon1 and lin.norm(x_prev[n:n+m] - x[n:n+m]) < epsilon2
-                and lin.norm(x_prev[n+m:n+m+m] - x[n+m:n+m+m]) < epsilon3
-                and lin.norm(x_prev[n+m+m:n+n+m+m] - x[n+m+m:n+n+m+m]) < epsilon4)
+            #result.append(x)
+            if ((lin.norm(x_prev[0:n] - x[0:n]) < self.e1 and lin.norm(x_prev[n:n+m] - x[n:n+m]) < self.e2
+                and lin.norm(x_prev[n+m:n+m+m] - x[n+m:n+m+m]) < self.e3
+                and lin.norm(x_prev[n+m+m:n+n+m+m] - x[n+m+m:n+n+m+m]) < self.e4)
                 or (k > k_max)):
-                return (result)
+                return x
