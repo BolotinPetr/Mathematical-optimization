@@ -19,5 +19,5 @@ c_1 = np.array([5, 4, 3])
 param = np.array([100, 0.01, 0.01, 0.01, 0.01])
 lin_prog = CentralPath.CentralPathMethod(param)
 lin_prog.fit(c_1, A_1, b_1)
-print lin_prog.method(np.ones(8))
+print lin_prog.method()
 
