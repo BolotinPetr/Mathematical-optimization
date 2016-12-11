@@ -2,7 +2,7 @@ import numpy as np
 import math
 
 
-def gradient_descent(function, initial):
+def gradient_descent(function, initial, accuracy, gradQ):
     def find_grad():
         x = np.zeros(number)
         x[:] = initial
@@ -22,19 +22,22 @@ def gradient_descent(function, initial):
                 status2 = 0
         return step1
     eps = 0.1
-    delta = 0.5
-    h = 0.0001
+    delta = 0.1
+    h = 0.000000001
     step = 0.01
     number = initial.shape[0]
     grad = np.zeros(number)
     status = 1
+    counter = 0
     while status != 0:
-        find_grad()
+        counter += 1
+        grad = gradQ(initial)
         step = choose_step(step)
         initial = initial - grad * step
-        #print step
-        if np.all(grad*step <= 0.001) and np.all(grad*step >= -0.001):
+        print grad, step
+        if np.all(grad*step <= accuracy) and np.all(grad*step >= -accuracy):
             status = 0
     norma = map(lambda x: x*x, initial)
     norma = math.sqrt(reduce(lambda x, y: x+y, norma))
-    return initial/norma
+    print counter, grad
+    return initial/norma, counter
